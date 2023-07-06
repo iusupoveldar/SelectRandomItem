@@ -49,6 +49,35 @@ function addBarSelectionMenu(){
         newSpan.innerText = "Select Range";
         newSpan.style.marginRight = "30px"
 
+        //Retrieve the min max from inputs
+        newSpan.onclick = function(){
+            var minValue = document.getElementById('SelectMin').value;
+            var maxValue = document.getElementById('SelectMax').value;
+            if (minValue === "" || minValue === null){
+                minValue = 0;
+            }
+            if (maxValue === "" || maxValue === null){
+                maxValue = Number.MAX_VALUE;
+            }
+            // Select all items in the inventory
+            var allItems = document.getElementById('tabcontent_inventory').querySelectorAll('.item');
+            allItems.forEach((item) => {
+                const priceIndicatorElement = item.querySelector('.priceIndicator');
+                if (priceIndicatorElement !== null) {
+                    const price = priceIndicatorElement.textContent;
+                    let priceFloat = parseFloat(price.replace("$", ""));
+                    const imageElement = item.querySelector('img');
+                    if (imageElement !== null && price !== "$0.00" && price !== "" && priceFloat < parseFloat(maxValue) && priceFloat >= parseFloat(minValue)) {
+                        const imageSrc = imageElement.getAttribute('src');
+                        console.log(price);
+                        console.log(imageSrc);
+                    }
+                }
+            });
+        }
+
+
+
         //Create new input min element
         var newInputMin = document.createElement('input');
         newInputMin.type = "number";
