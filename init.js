@@ -36,9 +36,10 @@ function addButton() {
     }
 }
 
-function SelectedItem(imageSrc, price){
+function SelectedItem(imageSrc, price, name){
     this.imageSrc = imageSrc;
     this.price = price;
+    this.name = name;
 }
 
 function addBarSelectionMenu(){
@@ -74,6 +75,7 @@ function addBarSelectionMenu(){
             var allItems = document.getElementById('tabcontent_inventory').querySelectorAll('.item');
             allItems.forEach((item) => {
                 const priceIndicatorElement = item.querySelector('.priceIndicator');
+                const id = item.id;
                 if (priceIndicatorElement !== null) {
                     const price = priceIndicatorElement.textContent;
                     let priceFloat = parseFloat(price.replace("$", ""));
@@ -81,7 +83,8 @@ function addBarSelectionMenu(){
                     if (imageElement !== null && price !== "$0.00" && price !== "" && priceFloat < parseFloat(maxValue) && priceFloat >= parseFloat(minValue)) {
                         const imageSrc = imageElement.getAttribute('src');
                         //Store the result in the global var
-                        selectedItems.push(new SelectedItem(imageSrc, price)) 
+                        console.log(item)
+                        selectedItems.push(new SelectedItem(imageSrc, price, id)) 
                     }
                 }
             });
