@@ -1,3 +1,9 @@
+//Global level vars
+var selectedItems = [];
+
+
+
+
 // content.js
 function addButton() {
     var functionBarActions = document.getElementById('functionBarActions');
@@ -28,6 +34,11 @@ function addButton() {
         // Inject the new span (with the button) to the div as the first child
         functionBarActions.prepend(newSpan);
     }
+}
+
+function SelectedItem(imageSrc, price){
+    this.imageSrc = imageSrc;
+    this.price = price;
 }
 
 function addBarSelectionMenu(){
@@ -69,11 +80,13 @@ function addBarSelectionMenu(){
                     const imageElement = item.querySelector('img');
                     if (imageElement !== null && price !== "$0.00" && price !== "" && priceFloat < parseFloat(maxValue) && priceFloat >= parseFloat(minValue)) {
                         const imageSrc = imageElement.getAttribute('src');
-                        console.log(price);
-                        console.log(imageSrc);
+                        //Store the result in the global var
+                        selectedItems.push(new SelectedItem(imageSrc, price)) 
                     }
                 }
             });
+            // print the selected items
+            console.log(selectedItems);
         }
 
 
