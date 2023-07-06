@@ -1,5 +1,7 @@
 //Global level vars
-var selectedItems = [];
+var selectedItemsTier1 = [];
+var selectedItemsTier2 = [];
+var selectedItemsTier3 = [];
 
 
 
@@ -36,6 +38,19 @@ function addButton() {
     }
 }
 
+// Get tier of the item
+function getTier() {
+    let rand = Math.random();
+    if(rand < 0.5) {
+      return selectedItemsTier1;
+    } else if(rand < 0.85) {
+      return selectedItemsTier2;
+    } else {
+      return selectedItemsTier3;
+    }
+  }
+
+// Data class to store selected items
 function SelectedItem(imageSrc, price, name){
     this.imageSrc = imageSrc;
     this.price = price;
@@ -63,6 +78,8 @@ function addBarSelectionMenu(){
 
         //Retrieve the min max from inputs
         newSpan.onclick = function(){
+            //empty the selected items
+            selectedItems = []
             var minValue = document.getElementById('SelectMin').value;
             var maxValue = document.getElementById('SelectMax').value;
             if (minValue === "" || minValue === null){
@@ -82,14 +99,23 @@ function addBarSelectionMenu(){
                     const imageElement = item.querySelector('img');
                     if (imageElement !== null && price !== "$0.00" && price !== "" && priceFloat < parseFloat(maxValue) && priceFloat >= parseFloat(minValue)) {
                         const imageSrc = imageElement.getAttribute('src');
-                        //Store the result in the global var
-                        console.log(item)
-                        selectedItems.push(new SelectedItem(imageSrc, price, id)) 
+                        //Store the result in the global var 
+                        if (priceFloat <= 10){
+                            selectedItemsTier1.push(new SelectedItem(imageSrc, price, id)) 
+                        }
+                        else if (priceFloat <= 20){ 
+                            selectedItemsTier2.push(new SelectedItem(imageSrc, price, id)) 
+                        }else{
+                            selectedItemsTier3.push(new SelectedItem(imageSrc, price, id)) 
+                        }
                     }
                 }
             });
             // print the selected items
-            console.log(selectedItems);
+            let chosenTier = getTier();
+            let chosenItem = chosenTier[Math.floor(Math.random() * chosenTier.length)];
+
+            console.log(chosenItem);
         }
 
 
