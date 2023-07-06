@@ -14,5 +14,11 @@
             "run_at":"document_idle",
             "js":["init.js"]
         }
-    ]
+    ],
+    "web_accessible_resources": [
+        {
+          "resources": ["images/case.svg"],
+          "matches":["<all_urls>"]
+        }
+      ]
 }
