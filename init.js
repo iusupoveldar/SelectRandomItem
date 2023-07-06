@@ -40,6 +40,7 @@ function addButton() {
 
 // Show the win image
 function showWinImage(item){
+
     //mainContents
     var newDiv = document.createElement('div');
     newDiv.id = "winDiv";
@@ -64,6 +65,7 @@ function showWinImage(item){
     img.onclick = function(){
         // document.getElementById('rouletteImagesId').scrollBy = 1;
         console.log("happened")
+        //href invetniry/#name
     };
     newDiv.appendChild(img);  
 
@@ -161,6 +163,7 @@ function addBarSelectionMenu(){
             }
             // Select all items in the inventory
             var allItems = document.getElementById('tabcontent_inventory').querySelectorAll('.item');
+            console.log(allItems)
             allItems.forEach((item) => {
                 const priceIndicatorElement = item.querySelector('.priceIndicator');
                 const id = item.id;
