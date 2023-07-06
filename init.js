@@ -38,6 +38,77 @@ function addButton() {
     }
 }
 
+// Show the win image
+function showWinImage(item){
+    //mainContents
+    var newDiv = document.createElement('div');
+    newDiv.id = "winDiv";
+
+    //images div
+    // var imagesDiv = document.createElement('img');
+    newDiv.style.display = "flex";
+    newDiv.style.justifyContent = "center";
+    // imagesDiv.style.maxWidth = "100%";
+    // imagesDiv.style.overflow = "auto";
+    // imagesDiv.id = 'winImage'
+
+    // [1,2,4,5,6,7,8,9,10].forEach((item) => {
+    //     setTimeout(1000);
+    //     imagesDiv.scroll = item;
+    // });
+
+    // var selectedItems = selectedItemsTier1.concat(selectedItemsTier2,selectedItemsTier3);
+ 
+    var img = document.createElement('img');
+    img.src = item.imageSrc
+    img.onclick = function(){
+        // document.getElementById('rouletteImagesId').scrollBy = 1;
+        console.log("happened")
+    };
+    newDiv.appendChild(img);  
+
+    var parentDiv = document.getElementById('mainContents');
+    var beforeDiv = document.querySelector('.tabitems_ctn');
+    parentDiv.insertBefore(newDiv, beforeDiv)
+}
+
+// Create images
+function addImagesToTheRoulette(){
+    //mainContents
+    var newDiv = document.createElement('div');
+    newDiv.id = "roulette";
+
+    //images div
+    var imagesDiv = document.createElement('rouletteImages');
+    imagesDiv.style.display = "flex";
+    imagesDiv.style.justifyContent = "center";
+    imagesDiv.style.maxWidth = "100%";
+    imagesDiv.style.overflow = "auto";
+    imagesDiv.id = 'rouletteImagesId'
+
+    // [1,2,4,5,6,7,8,9,10].forEach((item) => {
+    //     setTimeout(1000);
+    //     imagesDiv.scroll = item;
+    // });
+
+    var selectedItems = selectedItemsTier1.concat(selectedItemsTier2,selectedItemsTier3);
+
+    selectedItems.forEach((item) =>{
+        var img = document.createElement('img');
+        img.src = item.imageSrc
+        img.onclick = function(){
+            document.getElementById('rouletteImagesId').scrollBy = 1;
+            console.log("happened")
+        };
+        imagesDiv.appendChild(img);
+    });
+    newDiv.appendChild(imagesDiv);
+
+    var parentDiv = document.getElementById('mainContents');
+    var beforeDiv = document.querySelector('.tabitems_ctn');
+    parentDiv.insertBefore(newDiv, beforeDiv)
+}
+
 // Get tier of the item
 function getTier() {
     let rand = Math.random();
@@ -114,7 +185,8 @@ function addBarSelectionMenu(){
             // print the selected items
             let chosenTier = getTier();
             let chosenItem = chosenTier[Math.floor(Math.random() * chosenTier.length)];
-
+            // addImagesToTheRoulette();
+            showWinImage(chosenItem)
             console.log(chosenItem);
         }
 
