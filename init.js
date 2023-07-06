@@ -47,6 +47,7 @@ function addBarSelectionMenu(){
         newSpan.id = "SelectRange";
         newSpan.title = "Select All Items Within the Range";
         newSpan.innerText = "Select Range";
+        newSpan.style.marginRight = "30px"
 
         //Create new input min element
         var newInputMin = document.createElement('input');
@@ -54,6 +55,8 @@ function addBarSelectionMenu(){
         newInputMin.min = "0";
         newInputMin.placeholder = "Min Value";
         newInputMin.id = "SelectMin";
+        newInputMin.style.width = "50.px";
+        newInputMin.style.marginRight = "5px";
 
         //Create new input max element
         var newInputMax = document.createElement('input');
@@ -61,6 +64,7 @@ function addBarSelectionMenu(){
         newInputMax.min = "0";
         newInputMax.placeholder = "Max Value";
         newInputMax.id = "SelectMax";
+        newInputMax.style.width = "50.px";
 
         // Appending components
         newDiv.appendChild(newSpan);
