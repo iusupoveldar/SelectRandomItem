@@ -35,35 +35,38 @@ function addButton() {
   }
 }
 
+function openItemInInventory(item) {
+  let currentUrl = window.location.href;
+  window.open(currentUrl + "/#" + item.name);
+}
+
 // Show the win image
 function showWinImage(item) {
   //mainContents
+  let element = document.querySelector("#winDiv");
+  if (element) {
+    element.remove();
+  }
   var newDiv = document.createElement("div");
   newDiv.id = "winDiv";
+  // var newA = document.createElement("a");
+  // newA.classList.add("inventory_item_link");
+  // newA.href = "#" + item.name;
 
   //images div
-  // var imagesDiv = document.createElement('img');
   newDiv.style.display = "flex";
   newDiv.style.justifyContent = "center";
-  // imagesDiv.style.maxWidth = "100%";
-  // imagesDiv.style.overflow = "auto";
-  // imagesDiv.id = 'winImage'
-
-  // [1,2,4,5,6,7,8,9,10].forEach((item) => {
-  //     setTimeout(1000);
-  //     imagesDiv.scroll = item;
-  // });
-
-  // var selectedItems = selectedItemsTier1.concat(selectedItemsTier2,selectedItemsTier3);
 
   var img = document.createElement("img");
   img.src = item.imageSrc;
   img.onclick = function () {
-    // document.getElementById('rouletteImagesId').scrollBy = 1;
     console.log("happened");
+    let currentUrl = window.location.href;
+    window.open(currentUrl + "/#" + item.name);
     //href invetniry/#name
   };
   newDiv.appendChild(img);
+  // newDiv.appendChild(newA);
 
   var parentDiv = document.getElementById("mainContents");
   var beforeDiv = document.querySelector(".tabitems_ctn");
@@ -133,6 +136,12 @@ function SelectedItem(imageSrc, price, name) {
   this.name = name;
 }
 
+function emptyTiers() {
+  selectedItemsTier1 = [];
+  selectedItemsTier2 = [];
+  selectedItemsTier3 = [];
+}
+
 function addBarSelectionMenu() {
   var inventoryFunctionBar = document.getElementById("inventory_function_bar");
   if (inventoryFunctionBar) {
@@ -154,6 +163,7 @@ function addBarSelectionMenu() {
 
     //Retrieve the min max from inputs
     newSpan.onclick = function () {
+      emptyTiers();
       //empty the selected items
       var minValue = document.getElementById("SelectMin").value;
       var maxValue = document.getElementById("SelectMax").value;
@@ -205,9 +215,7 @@ function addBarSelectionMenu() {
       console.log(chosenTier);
       let chosenItem =
         chosenTier[Math.floor(Math.random() * chosenTier.length)];
-      // addImagesToTheRoulette();
-      showWinImage(chosenItem);
-      //   console.log(chosenItem);
+      openItemInInventory(chosenItem);
     };
 
     //Create new input min element
