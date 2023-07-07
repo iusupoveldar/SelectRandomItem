@@ -109,7 +109,33 @@ function addImagesToTheRoulette() {
   var beforeDiv = document.querySelector(".tabitems_ctn");
   parentDiv.insertBefore(newDiv, beforeDiv);
 }
+function getRandomItemWeight() {
+  // Create an array of available items
+  let availableItems = selectedItems;
 
+  // Calculate the total weight of all items
+  let totalWeight = availableItems.reduce(
+    (total, item) => total + item.weight,
+    0
+  );
+
+  // Choose a random weight between 0 and totalWeight
+  let randomWeight = Math.random() * totalWeight;
+
+  // Go through the items, subtracting each item's weight from the random weight, until
+  // randomWeight is less than or equal to the current item's weight. That's your selected item.
+  let selectedItem;
+  for (let item of availableItems) {
+    if (randomWeight <= item.weight) {
+      selectedItem = item;
+      break;
+    }
+    randomWeight -= item.weight;
+  }
+
+  // Return the selected item, or null if none were selected (should not happen if items have weight)
+  return selectedItem || null;
+}
 // Get tier of the item
 function getRandomItem() {
   let availableTiers = [];
@@ -135,11 +161,11 @@ function convertPriceToFloat(s) {
 }
 
 // Data class to store selected items
-function SelectedItem(imageSrc, price, name, tier) {
+function SelectedItem(imageSrc, price, name) {
   this.imageSrc = imageSrc;
   this.price = price;
   this.name = name;
-  this.tier = tier;
+  this.weight = 1 / price;
 }
 
 function emptyTiers() {
@@ -155,20 +181,6 @@ function addBarSelectionMenu() {
     newDiv.id = "functionBarSelectRange";
     newDiv.classList.add("functionBarRow");
     newDiv.classList.add("hidden");
-
-    // Create Tiers
-    var tierInputs = ["Tier 1", "Tier 2", "Tier 3"]; // Replace this array with your own values
-    tierInputs.forEach(function (tier, i) {
-      var inputElement = document.createElement("input");
-      inputElement.type = "number";
-      inputElement.min = "0";
-      inputElement.placeholder = tier;
-      inputElement.id = "Select" + tier + " Percentage";
-      inputElement.style.width = "50px";
-      newDiv.appendChild(inputElement);
-    });
-    // Create BR
-    var newBr = document.createElement("br");
 
     // Create a new span element
     var newSpan = document.createElement("span");
@@ -212,25 +224,15 @@ function addBarSelectionMenu() {
             priceFloat !== 0.0
           ) {
             const imageSrc = imageElement.getAttribute("src");
-            let tier;
-            if (priceFloat <= 10) {
-              tier = 1;
-            } else if (priceFloat <= 20) {
-              tier = 2;
-            } else {
-              tier = 3;
-            }
             // Push all items to a single array, but keep track of their tier
-            selectedItems.push(
-              new SelectedItem(imageSrc, priceFloat, id, tier)
-            );
+            selectedItems.push(new SelectedItem(imageSrc, priceFloat, id));
           }
         }
       });
-      console.log(selectedItems);
-      let chosenItem = getRandomItem();
+      let chosenItem = getRandomItemWeight();
       if (chosenItem != null) {
         openItemInInventory(chosenItem);
+        console.log(chosenItem);
       } else {
         alert("No Items Were Selected");
       }
