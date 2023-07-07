@@ -1,8 +1,5 @@
 //Global level vars
-var selectedItemsTier1 = [];
-var selectedItemsTier2 = [];
-var selectedItemsTier3 = [];
-
+var selectedItems = [];
 // content.js
 function addButton() {
   var functionBarActions = document.getElementById("functionBarActions");
@@ -114,15 +111,23 @@ function addImagesToTheRoulette() {
 }
 
 // Get tier of the item
-function getTier() {
-  let rand = Math.random();
-  if (rand < 0.5) {
-    return selectedItemsTier1;
-  } else if (rand < 0.85) {
-    return selectedItemsTier2;
-  } else {
-    return selectedItemsTier3;
-  }
+function getRandomItem() {
+  let availableTiers = [];
+
+  // Check if there are items in tier 1, 2, and 3 respectively
+  if (selectedItems.some((item) => item.tier === 1)) availableTiers.push(1);
+  if (selectedItems.some((item) => item.tier === 2)) availableTiers.push(2);
+  if (selectedItems.some((item) => item.tier === 3)) availableTiers.push(3);
+
+  // Randomly select one of the available tiers
+  let selectedTier =
+    availableTiers[Math.floor(Math.random() * availableTiers.length)];
+
+  // Filter the items for the specified tier
+  let itemsInTier = selectedItems.filter((item) => item.tier === selectedTier);
+  // Randomly select one of the items in the tier
+  let chosenItem = itemsInTier[Math.floor(Math.random() * itemsInTier.length)];
+  return chosenItem;
 }
 
 function convertPriceToFloat(s) {
@@ -130,16 +135,15 @@ function convertPriceToFloat(s) {
 }
 
 // Data class to store selected items
-function SelectedItem(imageSrc, price, name) {
+function SelectedItem(imageSrc, price, name, tier) {
   this.imageSrc = imageSrc;
   this.price = price;
   this.name = name;
+  this.tier = tier;
 }
 
 function emptyTiers() {
-  selectedItemsTier1 = [];
-  selectedItemsTier2 = [];
-  selectedItemsTier3 = [];
+  selectedItems = [];
 }
 
 function addBarSelectionMenu() {
@@ -151,6 +155,21 @@ function addBarSelectionMenu() {
     newDiv.id = "functionBarSelectRange";
     newDiv.classList.add("functionBarRow");
     newDiv.classList.add("hidden");
+
+    // Create Tiers
+    var tierInputs = ["Tier 1", "Tier 2", "Tier 3"]; // Replace this array with your own values
+    tierInputs.forEach(function (tier, i) {
+      var inputElement = document.createElement("input");
+      inputElement.type = "number";
+      inputElement.min = "0";
+      inputElement.placeholder = tier;
+      inputElement.id = "Select" + tier + " Percentage";
+      inputElement.style.width = "50px";
+      newDiv.appendChild(inputElement);
+    });
+    // Create BR
+    var newBr = document.createElement("br");
+
     // Create a new span element
     var newSpan = document.createElement("span");
     newSpan.classList.add("clickable");
@@ -193,29 +212,28 @@ function addBarSelectionMenu() {
             priceFloat !== 0.0
           ) {
             const imageSrc = imageElement.getAttribute("src");
-            //Store the result in the global var
+            let tier;
             if (priceFloat <= 10) {
-              selectedItemsTier1.push(
-                new SelectedItem(imageSrc, priceFloat, id)
-              );
+              tier = 1;
             } else if (priceFloat <= 20) {
-              selectedItemsTier2.push(
-                new SelectedItem(imageSrc, priceFloat, id)
-              );
+              tier = 2;
             } else {
-              selectedItemsTier3.push(
-                new SelectedItem(imageSrc, priceFloat, id)
-              );
+              tier = 3;
             }
+            // Push all items to a single array, but keep track of their tier
+            selectedItems.push(
+              new SelectedItem(imageSrc, priceFloat, id, tier)
+            );
           }
         }
       });
-      // print the selected items
-      let chosenTier = getTier();
-      console.log(chosenTier);
-      let chosenItem =
-        chosenTier[Math.floor(Math.random() * chosenTier.length)];
-      openItemInInventory(chosenItem);
+      console.log(selectedItems);
+      let chosenItem = getRandomItem();
+      if (chosenItem != null) {
+        openItemInInventory(chosenItem);
+      } else {
+        alert("No Items Were Selected");
+      }
     };
 
     //Create new input min element
