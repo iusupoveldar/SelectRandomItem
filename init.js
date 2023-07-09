@@ -161,11 +161,31 @@ function convertPriceToFloat(s) {
 }
 
 // Data class to store selected items
-function SelectedItem(imageSrc, price, name) {
+function SelectedItem(
+  imageSrc,
+  price,
+  priceCurrency,
+  float,
+  stickerPrice,
+  exteriorIndicator,
+  dopplerPhase,
+  name
+) {
   this.imageSrc = imageSrc;
   this.price = price;
+  this.priceCurrency = priceCurrency;
+  this.float = float;
   this.name = name;
+  this.exteriorIndicator = exteriorIndicator;
+  this.dopplerPhase = dopplerPhase;
+  this.stickerPrice = stickerPrice;
   this.weight = 1 / price;
+}
+
+function ExteriorSTInfo(souvenir, stattrack, exteriorIndicator) {
+  this.souvenir = souvenir;
+  this.stattrack = stattrack;
+  this.exteriorIndicator = exteriorIndicator;
 }
 
 function emptyTiers() {
@@ -223,19 +243,51 @@ function addBarSelectionMenu() {
             priceFloat >= parseFloat(minValue) &&
             priceFloat !== 0.0
           ) {
+            // item information stored to vars
             const imageSrc = imageElement.getAttribute("src");
+            const stickerPrice =
+              item.querySelector(".stickerPrice").textContent;
+            const floatIndicator =
+              item.querySelector(".floatIndicator").textContent;
+            const stOrange = item.querySelector(".stattrakOrange").textContent;
+            const souvenir = item.querySelector(".souvenirYellow").textContent;
+            const exteriorIndicator =
+              item.querySelector(".exteriorIndicator").textContent;
+            exteriorInformation = new ExteriorSTInfo(
+              souvenir,
+              stOrange,
+              exteriorIndicator
+            );
+            console.log(exteriorInformation);
+            const dopplerDiv = document.querySelector(".dopplerPhase");
+            const dopplerInformation = dopplerDiv
+              ? dopplerDiv.textContent
+              : null;
+
             // Push all items to a single array, but keep track of their tier
-            selectedItems.push(new SelectedItem(imageSrc, priceFloat, id));
+            selectedItems.push(
+              new SelectedItem(
+                imageSrc,
+                priceFloat,
+                price,
+                floatIndicator,
+                stickerPrice,
+                exteriorInformation,
+                dopplerInformation,
+                id
+              )
+            );
           }
         }
       });
-      let chosenItem = getRandomItemWeight();
-      if (chosenItem != null) {
-        openItemInInventory(chosenItem);
-        console.log(chosenItem);
-      } else {
-        alert("No Items Were Selected");
-      }
+      createInventoryPageWithSelectedItems();
+      // let chosenItem = getRandomItemWeight();
+      // if (chosenItem != null) {
+      //   openItemInInventory(chosenItem);
+      //   console.log(chosenItem);
+      // } else {
+      //   alert("No Items Were Selected");
+      // }
     };
 
     //Create new input min element
@@ -261,6 +313,128 @@ function addBarSelectionMenu() {
     newDiv.appendChild(newInputMax);
     inventoryFunctionBar.prepend(newDiv);
   }
+}
+
+function createItemHolder(itemInformation) {
+  let itemHolder = document.createElement("div");
+  itemHolder.className = "itemHolder";
+
+  let item = document.createElement("div");
+  item.className =
+    "item app" + itemInformation.name.split("_")[0] + " context2";
+  item.id = itemInformation.name;
+  item.style.backgroundImage = "url()";
+  item.style.backgroundColor = "#653232";
+  item.style.borderColor = "#653232";
+  item.setAttribute("data-processed", "true");
+  item.setAttribute("data-price-ratio", "100");
+
+  let img = document.createElement("img");
+  img.src = itemInformation.imageSrc;
+  item.appendChild(img);
+
+  let link = document.createElement("a");
+  link.href = "#" + itemInformation.name;
+  link.className = "inventory_item_link";
+  item.appendChild(link);
+
+  // Create slot_app_fraudwarning div
+  let fraudwarning = document.createElement("div");
+  fraudwarning.className = "slot_app_fraudwarning";
+
+  // Create exteriorSTInfo div
+  let exteriorSTInfo = document.createElement("div");
+  exteriorSTInfo.className = "exteriorSTInfo";
+
+  // Create souvenirYellow span
+  let souvenirYellow = document.createElement("span");
+  souvenirYellow.className = "souvenirYellow";
+  souvenirYellow.textContent = itemInformation.exteriorIndicator.souvenir;
+
+  // Create stattrakOrange span
+  let stattrakOrange = document.createElement("span");
+  stattrakOrange.className = "stattrakOrange";
+  stattrakOrange.textContent = itemInformation.exteriorIndicator.stattrack;
+  // Create exteriorIndicator span
+  let exteriorIndicator = document.createElement("span");
+  exteriorIndicator.className = "exteriorIndicator";
+  exteriorIndicator.textContent =
+    itemInformation.exteriorIndicator.exteriorIndicator;
+
+  // Add spans to exteriorSTInfo div
+  exteriorSTInfo.appendChild(souvenirYellow);
+  exteriorSTInfo.appendChild(stattrakOrange);
+  exteriorSTInfo.appendChild(exteriorIndicator);
+
+  // Create stickerPrice div
+  let stickerPrice = document.createElement("div");
+  stickerPrice.className = "stickerPrice";
+  stickerPrice.textContent = itemInformation.stickerPrice;
+
+  // Create priceIndicator div
+  let priceIndicator = document.createElement("div");
+  priceIndicator.className = "priceIndicator";
+  priceIndicator.textContent = itemInformation.priceCurrency;
+
+  // Create floatIndicator div
+  let floatIndicator = document.createElement("div");
+  floatIndicator.className = "floatIndicator";
+  floatIndicator.textContent = itemInformation.float;
+
+  // Append children to item div
+  item.appendChild(img);
+  item.appendChild(link);
+  item.appendChild(fraudwarning);
+  item.appendChild(exteriorSTInfo);
+  item.appendChild(stickerPrice);
+  item.appendChild(priceIndicator);
+  item.appendChild(floatIndicator);
+
+  itemHolder.appendChild(item);
+
+  return itemHolder;
+}
+
+function createInventoryPageWithSelectedItems() {
+  // Check if element exist
+  let element = document.querySelector(".selectedItemsPage");
+  if (element) {
+    element.remove();
+  }
+  // Create new inventory_page div
+  let newInventoryPage = document.createElement("div");
+  newInventoryPage.className = "inventory_page";
+  newInventoryPage.classList.add("selectedItemsPage");
+
+  // Add styles (copy existing styles and modify as needed)
+  newInventoryPage.style.display = "block";
+
+  // create an item holder for each element
+  selectedItems.forEach((item) => {
+    var itemHolder = createItemHolder(item);
+    newInventoryPage.appendChild(itemHolder);
+  });
+
+  // Add the new div to the inventory_ctn
+  let inventoryCtn = document.querySelector(".inventory_ctn");
+  const inventoryPages = inventoryCtn.querySelectorAll(".inventory_page");
+
+  // remove each inventory_page div
+  inventoryPages.forEach((page) => {
+    page.remove();
+  });
+  // Hide the other inventory_page divs
+  // let inventoryPages = document.querySelectorAll(".inventory_page");
+  // for (let i = 0; i < inventoryPages.length; i++) {
+  //   // If the current inventory_page div has style display: block
+  //   // if (inventoryPages[i].style.display === "block") {
+  //   //   // Hide it
+  //   //   inventoryPages[i].style.display = "none";
+  //   // }
+
+  //   inventoryPages[i].remove();
+  // }
+  inventoryCtn.appendChild(newInventoryPage);
 }
 
 var checkExist = setInterval(function () {
