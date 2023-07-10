@@ -1,5 +1,7 @@
 //Global level vars
 var selectedItems = [];
+var allItemsBackUp = [];
+
 // content.js
 function addButton() {
   var functionBarActions = document.getElementById("functionBarActions");
@@ -83,11 +85,6 @@ function addImagesToTheRoulette() {
   imagesDiv.style.maxWidth = "100%";
   imagesDiv.style.overflow = "auto";
   imagesDiv.id = "rouletteImagesId";
-
-  // [1,2,4,5,6,7,8,9,10].forEach((item) => {
-  //     setTimeout(1000);
-  //     imagesDiv.scroll = item;
-  // });
 
   var selectedItems = selectedItemsTier1.concat(
     selectedItemsTier2,
@@ -224,11 +221,13 @@ function addBarSelectionMenu() {
       if (maxValue === "" || maxValue === null) {
         maxValue = Number.MAX_VALUE;
       }
-      // Select all items in the inventory
-      var allItems = document
-        .getElementById("tabcontent_inventory")
-        .querySelectorAll(".item");
-      allItems.forEach((item) => {
+      // Select all items in the inventory if allItemsBackUp is empty
+      if (allItemsBackUp.length === 0) {
+        allItemsBackUp = document
+          .getElementById("tabcontent_inventory")
+          .querySelectorAll(".item");
+      }
+      allItemsBackUp.forEach((item) => {
         const priceIndicatorElement = item.querySelector(".priceIndicator");
         const id = item.id;
         if (priceIndicatorElement !== null) {
@@ -258,8 +257,7 @@ function addBarSelectionMenu() {
               stOrange,
               exteriorIndicator
             );
-            console.log(exteriorInformation);
-            const dopplerDiv = document.querySelector(".dopplerPhase");
+            const dopplerDiv = item.querySelector(".dopplerPhase");
             const dopplerInformation = dopplerDiv
               ? dopplerDiv.textContent
               : null;
@@ -281,13 +279,14 @@ function addBarSelectionMenu() {
         }
       });
       createInventoryPageWithSelectedItems();
-      // let chosenItem = getRandomItemWeight();
-      // if (chosenItem != null) {
-      //   openItemInInventory(chosenItem);
-      //   console.log(chosenItem);
-      // } else {
-      //   alert("No Items Were Selected");
-      // }
+      let chosenItem = getRandomItemWeight();
+      if (chosenItem != null) {
+        // openItemInInventory(chosenItem);
+        highlightChosenItem(chosenItem);
+        console.log(chosenItem);
+      } else {
+        alert("No Items Were Selected");
+      }
     };
 
     //Create new input min element
@@ -315,6 +314,13 @@ function addBarSelectionMenu() {
   }
 }
 
+function highlightChosenItem(item) {
+  let element = document.getElementById(item.name);
+  element.style.borderColor = "white"; // Change the background color to blue
+  let anchorElement = element.querySelector("a.inventory_item_link"); // Get the a element inside the div
+  anchorElement.click(); // Trigger a click on the a element
+}
+
 function createItemHolder(itemInformation) {
   let itemHolder = document.createElement("div");
   itemHolder.className = "itemHolder";
@@ -324,19 +330,17 @@ function createItemHolder(itemInformation) {
     "item app" + itemInformation.name.split("_")[0] + " context2";
   item.id = itemInformation.name;
   item.style.backgroundImage = "url()";
-  item.style.backgroundColor = "#653232";
+  // item.style.backgroundColor = "#653232";
   item.style.borderColor = "#653232";
   item.setAttribute("data-processed", "true");
   item.setAttribute("data-price-ratio", "100");
 
   let img = document.createElement("img");
   img.src = itemInformation.imageSrc;
-  item.appendChild(img);
 
   let link = document.createElement("a");
   link.href = "#" + itemInformation.name;
   link.className = "inventory_item_link";
-  item.appendChild(link);
 
   // Create slot_app_fraudwarning div
   let fraudwarning = document.createElement("div");
@@ -371,6 +375,14 @@ function createItemHolder(itemInformation) {
   stickerPrice.className = "stickerPrice";
   stickerPrice.textContent = itemInformation.stickerPrice;
 
+  // Create doppler phase div
+  if (itemInformation.dopplerInformation !== null) {
+    let dopplerPhase = document.createElement("div");
+    dopplerPhase.className = "dopplerPhase";
+    dopplerPhase.textContent = itemInformation.dopplerPhase;
+    item.appendChild(dopplerPhase);
+  }
+
   // Create priceIndicator div
   let priceIndicator = document.createElement("div");
   priceIndicator.className = "priceIndicator";
@@ -384,7 +396,9 @@ function createItemHolder(itemInformation) {
   // Append children to item div
   item.appendChild(img);
   item.appendChild(link);
-  item.appendChild(fraudwarning);
+  if (fraudwarning.textContent !== "") {
+    item.appendChild(fraudwarning);
+  }
   item.appendChild(exteriorSTInfo);
   item.appendChild(stickerPrice);
   item.appendChild(priceIndicator);
@@ -392,7 +406,29 @@ function createItemHolder(itemInformation) {
 
   itemHolder.appendChild(item);
 
+  //remove A elements
+  removeFloatAElement();
+
   return itemHolder;
+}
+
+function removeFloatAElement() {
+  let elements = document.querySelectorAll("a.hover_item_name.custom_name");
+  elements.forEach((element) => {
+    element.parentNode.removeChild(element);
+  });
+
+  //unhide h1 element
+  // If hidden by CSS 'display' property
+  document.getElementById("iteminfo0_item_name").style.display = "";
+
+  // If hidden by 'hidden' class
+  document.getElementById("iteminfo0_item_name").classList.remove("hidden");
+  // If hidden by CSS 'display' property
+  document.getElementById("iteminfo1_item_name").style.display = "";
+
+  // If hidden by 'hidden' class
+  document.getElementById("iteminfo1_item_name").classList.remove("hidden");
 }
 
 function createInventoryPageWithSelectedItems() {
@@ -423,17 +459,6 @@ function createInventoryPageWithSelectedItems() {
   inventoryPages.forEach((page) => {
     page.remove();
   });
-  // Hide the other inventory_page divs
-  // let inventoryPages = document.querySelectorAll(".inventory_page");
-  // for (let i = 0; i < inventoryPages.length; i++) {
-  //   // If the current inventory_page div has style display: block
-  //   // if (inventoryPages[i].style.display === "block") {
-  //   //   // Hide it
-  //   //   inventoryPages[i].style.display = "none";
-  //   // }
-
-  //   inventoryPages[i].remove();
-  // }
   inventoryCtn.appendChild(newInventoryPage);
 }
 
