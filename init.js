@@ -244,14 +244,23 @@ function addBarSelectionMenu() {
           ) {
             // item information stored to vars
             const imageSrc = imageElement.getAttribute("src");
-            const stickerPrice =
-              item.querySelector(".stickerPrice").textContent;
-            const floatIndicator =
-              item.querySelector(".floatIndicator").textContent;
-            const stOrange = item.querySelector(".stattrakOrange").textContent;
-            const souvenir = item.querySelector(".souvenirYellow").textContent;
-            const exteriorIndicator =
-              item.querySelector(".exteriorIndicator").textContent;
+            const stickerDiv = item.querySelector(".stickerPrice");
+            const stickerPrice = stickerDiv ? stickerDiv.textContent : null;
+            // const stickerPrice =
+            //   item.querySelector(".stickerPrice").textContent;
+            const floatIndicatorDiv = item.querySelector(".floatIndicator");
+            const floatIndicator = floatIndicatorDiv
+              ? floatIndicatorDiv.textContent
+              : null;
+            const stOrangeDiv = item.querySelector(".stattrakOrange");
+            const stOrange = stOrangeDiv ? stOrangeDiv.textContent : null;
+            const souvenirDiv = item.querySelector(".souvenirYellow");
+            const souvenir = souvenirDiv ? souvenirDiv.textContent : null;
+            const exteriorIndicatorDiv =
+              item.querySelector(".exteriorIndicator");
+            const exteriorIndicator = exteriorIndicatorDiv
+              ? exteriorIndicatorDiv.textContent
+              : null;
             exteriorInformation = new ExteriorSTInfo(
               souvenir,
               stOrange,
