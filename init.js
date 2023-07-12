@@ -236,7 +236,6 @@ function addBarSelectionMenu() {
           const imageElement = item.querySelector("img");
           if (
             imageElement !== null &&
-            price !== "$0.00" &&
             price !== "" &&
             priceFloat <= parseFloat(maxValue) &&
             priceFloat >= parseFloat(minValue) &&
@@ -440,26 +439,7 @@ function removeFloatAElement() {
   document.getElementById("iteminfo1_item_name").classList.remove("hidden");
 }
 
-function createInventoryPageWithSelectedItems() {
-  // Check if element exist
-  let element = document.querySelector(".selectedItemsPage");
-  if (element) {
-    element.remove();
-  }
-  // Create new inventory_page div
-  let newInventoryPage = document.createElement("div");
-  newInventoryPage.className = "inventory_page";
-  newInventoryPage.classList.add("selectedItemsPage");
-
-  // Add styles (copy existing styles and modify as needed)
-  newInventoryPage.style.display = "block";
-
-  // create an item holder for each element
-  selectedItems.forEach((item) => {
-    var itemHolder = createItemHolder(item);
-    newInventoryPage.appendChild(itemHolder);
-  });
-
+function hidePrevInformation(){ 
   // Add the new div to the inventory_ctn
   let inventoryCtn = document.querySelector(".inventory_ctn");
   const inventoryPages = inventoryCtn.querySelectorAll(".inventory_page");
@@ -468,7 +448,71 @@ function createInventoryPageWithSelectedItems() {
   inventoryPages.forEach((page) => {
     page.remove();
   });
-  inventoryCtn.appendChild(newInventoryPage);
+}
+
+function goToNextInventoryPage() {
+  // Select all inventory_page divs
+  let inventoryPages = document.querySelectorAll(".inventory_page");
+
+  // Iterate through the inventoryPages
+  for (let i = 0; i < inventoryPages.length; i++) {
+    // If the current page is displayed
+    if (inventoryPages[i].style.display === "block") {
+      // Hide the current page
+      inventoryPages[i].style.display = "none";
+
+      // If it's not the last page
+      if (i < inventoryPages.length - 1) {
+        // Display the next page
+        inventoryPages[i + 1].style.display = "block";
+      } else {
+        // If it is the last page, display the first page again
+        inventoryPages[0].style.display = "block";
+      }
+
+      // Break the loop once we've switched pages
+      break;
+    }
+  }
+}
+
+function createInventoryPageWithSelectedItems() { 
+  hidePrevInformation(); 
+
+  // Add the new div to the inventory_ctn
+  let inventoryCtn = document.querySelector(".inventory_ctn"); 
+
+  // Check if element exist
+  let element = document.querySelector(".selectedItemsPage");
+  if (element) {
+    element.remove();
+  }
+
+  // Divide selectedItems into chunks of 25
+  let chunks = [];
+  for (let i = 0; i < selectedItems.length; i += 25) {
+    chunks.push(selectedItems.slice(i, i + 25));
+  }
+
+  // Create inventory_page for each chunk
+  chunks.forEach((chunk, index) => {
+    // Create new inventory_page div
+    let newInventoryPage = document.createElement("div");
+    newInventoryPage.className = "inventory_page";
+    newInventoryPage.classList.add("selectedItemsPage");
+
+    // Add styles
+    newInventoryPage.style.display = (index === 0) ? "block" : "none"; // First chunk has display block, the rest have display none
+
+    // create an item holder for each element
+    chunk.forEach((item) => {
+      var itemHolder = createItemHolder(item);
+      newInventoryPage.appendChild(itemHolder);
+    });
+
+    inventoryCtn.appendChild(newInventoryPage);
+  }); 
+  document.getElementById("pagebtn_next").onclick = goToNextInventoryPage;
 }
 
 var checkExist = setInterval(function () {
