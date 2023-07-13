@@ -439,7 +439,7 @@ function removeFloatAElement() {
   document.getElementById("iteminfo1_item_name").classList.remove("hidden");
 }
 
-function hidePrevInformation(){ 
+function hidePrevInformation() {
   // Add the new div to the inventory_ctn
   let inventoryCtn = document.querySelector(".inventory_ctn");
   const inventoryPages = inventoryCtn.querySelectorAll(".inventory_page");
@@ -448,6 +448,40 @@ function hidePrevInformation(){
   inventoryPages.forEach((page) => {
     page.remove();
   });
+}
+
+function goToPreviousInventoryPage() {
+  // Select all inventory_page divs
+  let inventoryPages = document.querySelectorAll(".inventory_page");
+
+  // Iterate through the inventoryPages
+  for (let i = 0; i < inventoryPages.length; i++) {
+    // If the current page is displayed
+    if (inventoryPages[i].style.display === "block") {
+      // Hide the current page
+      inventoryPages[i].style.display = "none";
+
+      // If it's not the first page
+      if (i > 0) {
+        // Display the previous page
+        inventoryPages[i - 1].style.display = "block";
+      } else {
+        // If it is the first page, display the last page again
+        inventoryPages[inventoryPages.length - 1].style.display = "block";
+      }
+      // Update pagebtn_previous and pagebtn_next class
+      if (i - 2 <= 0) {
+        console.log("added class disabled to the prev button");
+        // If it's the first page, add disabled class to previous button
+        document.getElementById("pagebtn_previous").classList.add("disabled");
+      } else {
+        // Else, remove disabled class from next button
+        document.getElementById("pagebtn_next").classList.remove("disabled");
+      }
+      // Break the loop once we've switched pages
+      break;
+    }
+  }
 }
 
 function goToNextInventoryPage() {
@@ -469,18 +503,28 @@ function goToNextInventoryPage() {
         // If it is the last page, display the first page again
         inventoryPages[0].style.display = "block";
       }
-
+      // Update pagebtn_next and pagebtn_previous class
+      if (i + 1 >= inventoryPages.length - 1) {
+        console.log("added class disabled to the next button");
+        // If it's the last page, add disabled class to next button
+        document.getElementById("pagebtn_next").classList.add("disabled");
+      } else {
+        // Else, remove disabled class from previous button
+        document
+          .getElementById("pagebtn_previous")
+          .classList.remove("disabled");
+      }
       // Break the loop once we've switched pages
       break;
     }
   }
 }
 
-function createInventoryPageWithSelectedItems() { 
-  hidePrevInformation(); 
+function createInventoryPageWithSelectedItems() {
+  hidePrevInformation();
 
   // Add the new div to the inventory_ctn
-  let inventoryCtn = document.querySelector(".inventory_ctn"); 
+  let inventoryCtn = document.querySelector(".inventory_ctn");
 
   // Check if element exist
   let element = document.querySelector(".selectedItemsPage");
@@ -493,7 +537,8 @@ function createInventoryPageWithSelectedItems() {
   for (let i = 0; i < selectedItems.length; i += 25) {
     chunks.push(selectedItems.slice(i, i + 25));
   }
-
+  //print length of the pages
+  console.log(chunks.length);
   // Create inventory_page for each chunk
   chunks.forEach((chunk, index) => {
     // Create new inventory_page div
@@ -502,7 +547,7 @@ function createInventoryPageWithSelectedItems() {
     newInventoryPage.classList.add("selectedItemsPage");
 
     // Add styles
-    newInventoryPage.style.display = (index === 0) ? "block" : "none"; // First chunk has display block, the rest have display none
+    newInventoryPage.style.display = index === 0 ? "block" : "none"; // First chunk has display block, the rest have display none
 
     // create an item holder for each element
     chunk.forEach((item) => {
@@ -511,8 +556,14 @@ function createInventoryPageWithSelectedItems() {
     });
 
     inventoryCtn.appendChild(newInventoryPage);
-  }); 
+  });
   document.getElementById("pagebtn_next").onclick = goToNextInventoryPage;
+  document.getElementById("pagebtn_previous").onclick =
+    goToPreviousInventoryPage;
+
+  //overwrite page counter
+  document.getElementById("pagecontrol_cur").textContent = "1";
+  document.getElementById("pagecontrol_max").textContent = chunks.length;
 }
 
 var checkExist = setInterval(function () {
