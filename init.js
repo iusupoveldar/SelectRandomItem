@@ -2,6 +2,84 @@
 var selectedItems = [];
 var allItemsBackUp = [];
 
+function createRouletteContainer() {
+  //get parent component
+  var mainComponents = document.getElementById("mainContents");
+  // element before
+  var beforeDiv = document.querySelector(".tabitems_ctn");
+
+  var roulette = document.createElement("div");
+  roulette.classList.add(".roulette");
+  var rouletteContainer = document.createElement("div");
+  rouletteContainer.classList.add("roulette-container");
+  var wrap = document.createElement("div");
+  wrap.classList.add("wrap");
+  var controller = document.createElement("div");
+  controller.classList.add("controller");
+  wrap.appendChild(controller);
+  rouletteContainer.appendChild(wrap);
+  roulette.appendChild(rouletteContainer);
+  // roulette.classList.add("hidden");
+  //insert between
+  mainComponents.insertBefore(roulette, beforeDiv);
+}
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+// spin
+function spinPromise(item, wrap) {
+  return new Promise((resolve, reject) => {
+    let index, pixels, circles, pixelsStart;
+
+    index = selectedItems.indexOf(item);
+    pixels = 80 * (index + 1);
+    circles = 1760 * 15; //15 circles
+
+    pixels -= 80;
+    pixels = rand(pixels + 2, pixels + 79);
+    pixelsStart = pixels;
+    pixels += circles;
+    pixels *= -1;
+    console.log(wrap);
+    wrap.style.backgroundPosition = pixels + wrap.offsetWidth / 2 + "" + "px";
+
+    setTimeout(() => {
+      wrap.style.transition = "none";
+      let pos = (pixels * -1 - circles) * -1 + wrap.offsetWidth / 2;
+      wrap.style.backgroundPosition = String(pos) + "px";
+      setTimeout(() => {
+        wrap.style.transition = "background-position 5s";
+        resolve();
+      }, 510);
+    }, 5000 + 700);
+  });
+}
+
+function play(item) {
+  wrap = document.querySelector(".roulette-container .wrap");
+  spinPromise(item, wrap).then(() => {
+    console.log("[Ended]");
+    var mainComponents = document.getElementById("mainContents");
+    // element before
+    var beforeDiv = document.querySelector(".tabitems_ctn");
+
+    let currentUrl = window.location.href;
+    let bettedDiv = document.createElement("div");
+    let bettedElement = document.createElement("a");
+    bettedElement.setAttribute("class", "betted-item");
+    bettedElement.setAttribute("href", currentUrl + "/#" + item.name);
+    bettedDiv.style.display = "flex";
+    bettedDiv.style.justifyContent = "center";
+    bettedDiv.style.borderColor = "white";
+    // bettedElement.setAttribute("href", item.imageSrc);
+    let img = document.createElement("img");
+    img.src = item.imageSrc;
+    bettedElement.appendChild(img);
+    bettedDiv.appendChild(bettedElement);
+    mainComponents.insertBefore(bettedDiv, beforeDiv);
+  });
+}
+
 // content.js
 function addButton() {
   var functionBarActions = document.getElementById("functionBarActions");
@@ -72,40 +150,6 @@ function showWinImage(item) {
   parentDiv.insertBefore(newDiv, beforeDiv);
 }
 
-// Create images
-function addImagesToTheRoulette() {
-  //mainContents
-  var newDiv = document.createElement("div");
-  newDiv.id = "roulette";
-
-  //images div
-  var imagesDiv = document.createElement("rouletteImages");
-  imagesDiv.style.display = "flex";
-  imagesDiv.style.justifyContent = "center";
-  imagesDiv.style.maxWidth = "100%";
-  imagesDiv.style.overflow = "auto";
-  imagesDiv.id = "rouletteImagesId";
-
-  var selectedItems = selectedItemsTier1.concat(
-    selectedItemsTier2,
-    selectedItemsTier3
-  );
-
-  selectedItems.forEach((item) => {
-    var img = document.createElement("img");
-    img.src = item.imageSrc;
-    img.onclick = function () {
-      document.getElementById("rouletteImagesId").scrollBy = 1;
-      console.log("happened");
-    };
-    imagesDiv.appendChild(img);
-  });
-  newDiv.appendChild(imagesDiv);
-
-  var parentDiv = document.getElementById("mainContents");
-  var beforeDiv = document.querySelector(".tabitems_ctn");
-  parentDiv.insertBefore(newDiv, beforeDiv);
-}
 function getRandomItemWeight() {
   // Create an array of available items
   let availableItems = selectedItems;
@@ -286,11 +330,14 @@ function addBarSelectionMenu() {
           }
         }
       });
-      createInventoryPageWithSelectedItems();
+      // createInventoryPageWithSelectedItems();
       let chosenItem = getRandomItemWeight();
       if (chosenItem != null) {
         // openItemInInventory(chosenItem);
-        highlightChosenItem(chosenItem);
+        // highlightChosenItem(chosenItem);
+        // let roulette = document.getElementsByClassName("roulette");
+        // roulette.classList.remove("hidden");
+        play(chosenItem);
         console.log(chosenItem);
       } else {
         alert("No Items Were Selected");
@@ -322,11 +369,39 @@ function addBarSelectionMenu() {
   }
 }
 
+//remove every other extension text
+function removeTraderText() {
+  // Select the div element with class 'upperModule'
+  let upperModule = document.querySelector(".upperModule");
+
+  // Check if the element exists
+  if (upperModule) {
+    // Remove the element
+    upperModule.remove();
+  }
+  // Select the div element with class 'pricEmpireLink'
+  let priceEmpireLink = document.querySelector(".pricEmpireLink");
+
+  // Check if the element exists
+  if (priceEmpireLink) {
+    // Remove the element
+    priceEmpireLink.remove();
+  }
+  // Select the div element with class 'pricEmpireLink'
+  let lowerModule = document.querySelector(".lowerModule");
+
+  // Check if the element exists
+  if (lowerModule) {
+    // Remove the element
+    lowerModule.remove();
+  }
+}
+
 function highlightChosenItem(item) {
   let element = document.getElementById(item.name);
   element.style.borderColor = "white"; // Change the background color to blue
   let anchorElement = element.querySelector("a.inventory_item_link"); // Get the a element inside the div
-  anchorElement.click(); // Trigger a click on the a element
+  //anchorElement.click(); // Trigger a click on the a element
 }
 
 function createItemHolder(itemInformation) {
@@ -416,7 +491,7 @@ function createItemHolder(itemInformation) {
 
   //remove A elements
   removeFloatAElement();
-
+  removeTraderText();
   return itemHolder;
 }
 
@@ -482,6 +557,19 @@ function goToPreviousInventoryPage() {
       break;
     }
   }
+}
+
+function hideCurrentPagesDisplayNewOnes(maxPageNum) {
+  // Wait for a short delay (e.g., 100 milliseconds)
+  setTimeout(() => {
+    // Select the span elements
+    let currentPageSpan = document.getElementById("pagecontrol_cur");
+    let maxPageSpan = document.getElementById("pagecontrol_max");
+
+    // Change the content of the spans
+    currentPageSpan.textContent = "1";
+    maxPageSpan.textContent = maxPageNum;
+  }, 100); // delay in milliseconds
 }
 
 function goToNextInventoryPage() {
@@ -557,13 +645,28 @@ function createInventoryPageWithSelectedItems() {
 
     inventoryCtn.appendChild(newInventoryPage);
   });
-  document.getElementById("pagebtn_next").onclick = goToNextInventoryPage;
-  document.getElementById("pagebtn_previous").onclick =
-    goToPreviousInventoryPage;
 
-  //overwrite page counter
-  document.getElementById("pagecontrol_cur").textContent = "1";
-  document.getElementById("pagecontrol_max").textContent = chunks.length;
+  maxPageNum = chunks.length.toString();
+
+  document.getElementById("pagebtn_next").onclick = function () {
+    goToNextInventoryPage(maxPageNum);
+    hideCurrentPagesDisplayNewOnes(maxPageNum);
+    console.log("hidden");
+  };
+  document.getElementById("pagebtn_previous").onclick = function () {
+    goToPreviousInventoryPage(maxPageNum);
+    hideCurrentPagesDisplayNewOnes(maxPageNum);
+    console.log("hidden");
+  };
+  hideCurrentPagesDisplayNewOnes(maxPageNum);
+}
+
+function appendCss() {
+  var link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.type = "text/css";
+  link.href = chrome.runtime.getURL("css/styles.css");
+  (document.head || document.documentElement).appendChild(link);
 }
 
 var checkExist = setInterval(function () {
@@ -572,5 +675,7 @@ var checkExist = setInterval(function () {
     clearInterval(checkExist); // stop the interval once the element is found
     addButton();
     addBarSelectionMenu();
+    appendCss();
+    createRouletteContainer();
   }
 }, 100); // check every 100ms

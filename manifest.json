@@ -1,24 +1,27 @@
 {
-    "manifest_version":3,
-    "name":"Select Random Item In Steam Inventory",
-    "version":"1.0",
-    "permissions":[
-        "*://steamcommunity.com/*"
-    ],
-    "content_scripts":[
-        {
-            "matches":[
-                "*://steamcommunity.com/*/inventory",
-                "*://steamcommunity.com/*/inventory/*"
-            ],
-            "run_at":"document_idle",
-            "js":["init.js"]
-        }
-    ],
-    "web_accessible_resources": [
-        {
-          "resources": ["images/case.svg"],
-          "matches":["<all_urls>"]
-        }
-      ]
+  "manifest_version": 3,
+  "name": "Select Random Item In Steam Inventory",
+  "version": "1.0",
+  "permissions": ["*://steamcommunity.com/*"],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://steamcommunity.com/*/inventory",
+        "*://steamcommunity.com/*/inventory/*"
+      ],
+      "run_at": "document_idle",
+      "css": ["css/styles.css"],
+      "js": ["init.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["images/case.svg"],
+      "matches": ["<all_urls>"]
+    },
+    {
+      "resources": ["css/styles.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
